@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   aspectRatioOptions,
+  creditFee,
   defaultValues,
   transformationTypes,
 } from "@/constants";
@@ -26,9 +27,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
-import { AspectRatioKey, debounce } from "@/lib/utils";
+import { useState, useTransition } from "react";
+import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
 import { config } from "process";
+import MediaUploader from "./MediaUploader";
 
 export const formSchema = z.object({
   title: z.string(),
@@ -47,7 +49,7 @@ const TransformationForm = ({
 }: TransformationFormProps) => {
   const transformationType = transformationTypes[type];
   const [image, setImage] = useState(data);
-
+  const [isPending, startTransition] = useTransition();
   const [newTransformation, setNewTransformation] =
     useState<Transformations | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -75,20 +77,30 @@ const TransformationForm = ({
     // ✅ This will be type-safe and validated.
     console.log(values);
   }
-  const onTranformHandler =()=>{}
+  //TODO:Return to updateCredits
+  const onTranformHandler = async () => {
+    setIsTransforming(true);
+    setTransformationConfig(
+      deepMergeObjects(newTransformation, transformationConfig)
+    );
+    setNewTransformation(null);
+    startTransition(async () => {
+      // await updateCredits(user,creditFee)
+    });
+  };
   const onSelectFieldHandler = (
     value: string,
     onChangeField: (value: string) => void
   ) => {
-    const imageSize = aspectRatioOptions[value as AspectRatioKey] 
-    setImage((prevState : any)=>({
+    const imageSize = aspectRatioOptions[value as AspectRatioKey];
+    setImage((prevState: any) => ({
       ...prevState,
-      aspectRatio : imageSize.aspectRatio,
-      width : imageSize.width,
-      height : imageSize.height
-    }))
+      aspectRatio: imageSize.aspectRatio,
+      width: imageSize.width,
+      height: imageSize.height,
+    }));
     setNewTransformation(transformationType.config);
-    return onChangeField(value)
+    return onChangeField(value);
   };
   const onInputChangeHandler = (
     fieldName: string,
@@ -96,10 +108,16 @@ const TransformationForm = ({
     type: string,
     onChangeField: (value: string) => void
   ) => {
-    debounce(()=>{
-      setNewTransformation((prevState:any)=>({...prevState ,[type] : {...prevState?.[type],[fieldName ==='prompt' ? 'prompt' : 'to']:value}}))
-      return onChangeField(value)
-    },1000)
+    debounce(() => {
+      setNewTransformation((prevState: any) => ({
+        ...prevState,
+        [type]: {
+          ...prevState?.[type],
+          [fieldName === "prompt" ? "prompt" : "to"]: value,
+        },
+      }));
+      return onChangeField(value);
+    }, 1000);
   };
   return (
     <Form {...form}>
@@ -118,7 +136,7 @@ const TransformationForm = ({
             formLabel="Aspect Ratio"
             className="w-full"
             render={({ field }) => (
-              <Select
+              <Select       
                 onValueChange={(value) =>
                   onSelectFieldHandler(value, field.onChange)
                 }
@@ -185,21 +203,39 @@ const TransformationForm = ({
             )}
           </div>
         )}
+
+        <div className="media-uploader-field">
+          <CustomField 
+            control={form.control}
+            name="publicId"
+            className="flex size-full flex-col"
+            render= {({field})=>(
+              <MediaUploader 
+                onValueChange={field.onChange}
+                setImage={setImage}
+                publicId={field.value}
+                image={image}
+                type={type}
+              />
+            )}
+
+          />
+        </div>
         <div className="flex flex-col gap-4">
           <Button
             type="button"
             className="submit-button capitalize"
-            disabled={isTransforming || newTransformation===null}
+            disabled={isTransforming || newTransformation === null}
             onClick={onTranformHandler}
           >
-            {isTransforming?'Transforming ...':'Apply Transformation'}
+            {isTransforming ? "Transforming ..." : "Apply Transformation"}
           </Button>
           <Button
             type="submit"
             className="submit-button capitalize"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Submitting ...' : 'Save Image'}
+            {isSubmitting ? "Submitting ..." : "Save Image"}
           </Button>
         </div>
       </form>
