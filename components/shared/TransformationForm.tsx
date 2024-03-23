@@ -32,6 +32,7 @@ import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
 import { config } from "process";
 import MediaUploader from "./MediaUploader";
 import TransformedImage from "./TransformedImage";
+import { updateCredits } from "@/lib/actions/user.actions";
 
 export const formSchema = z.object({
   title: z.string(),
@@ -78,7 +79,7 @@ const TransformationForm = ({
     // ✅ This will be type-safe and validated.
     console.log(values);
   }
-  //TODO:Return to updateCredits
+  //TODO: Update creditfee accordingly
   const onTranformHandler = async () => {
     setIsTransforming(true);
     setTransformationConfig(
@@ -86,7 +87,7 @@ const TransformationForm = ({
     );
     setNewTransformation(null);
     startTransition(async () => {
-      // await updateCredits(user,creditFee)
+      await updateCredits(userId,-1)
     });
   };
   const onSelectFieldHandler = (
