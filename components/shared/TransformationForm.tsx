@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils";
 import { config } from "process";
 import MediaUploader from "./MediaUploader";
@@ -178,6 +178,11 @@ const TransformationForm = ({
       return onChangeField(value);
     }, 1000);
   };
+  useEffect(()=>{
+    if(image && (type=== 'restore' || type === 'removeBackground')){
+      setNewTransformation(transformationType.config)
+    }
+  },[image,transformationType.config ,type])
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
