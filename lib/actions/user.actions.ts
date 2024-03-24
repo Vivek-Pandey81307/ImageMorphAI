@@ -51,11 +51,11 @@ export async function deleteUser(clerkId :string){
 export async function updateCredits(userId : string,creditFee : number){
     try{
         await connectToDatabase();
-        const updateUserCredits= await User.findOneAndUpdate({_id : userId},{$inc : {credits : creditFee}},{new : true})
+        const updateUserCredits= await User.findOneAndUpdate({_id : userId},{$inc : {creditBalance: creditFee}},{new : true})
         if(!updateUserCredits) throw new  Error("User credits update failed")
         return JSON.parse(JSON.stringify(updateUserCredits))
     }catch(error){
         handleError(error);
     }
-}
+} 
 
