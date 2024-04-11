@@ -2,7 +2,7 @@ import { Schema, model, models } from "mongoose";
 
 export interface IImage extends Document{
     title : string;
-    transfromationType :string;
+    transformationType :string;
     publicId : string;
     secureURL : string;
     width?:number;
