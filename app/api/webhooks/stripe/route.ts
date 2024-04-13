@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       buyerId: metadata?.buyerId || "",
       createdAt: new Date(),
     };
-
+    console.log("hello hi ji")
     const newTransaction = await createTransaction(transaction);
     
     return NextResponse.json({ message: "OK", transaction: newTransaction });

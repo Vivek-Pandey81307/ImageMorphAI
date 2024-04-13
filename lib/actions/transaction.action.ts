@@ -35,11 +35,12 @@ export async function checkoutCredits(
     redirect(session.url!)
 }
 export async function createTransaction (transaction : CreateTransactionParams){
-    try{
+    try{console.log("hey"+transaction.credits);
         await connectToDatabase();
         const newTransaction = await Transaction.create({
-            ...transaction ,buyer:transaction.buyerId
+            ...transaction ,buyer : transaction.buyerId
         })
+        
         await updateCredits(transaction.buyerId,transaction.credits);
         return JSON.parse(JSON.stringify(newTransaction));
     }catch(error){
