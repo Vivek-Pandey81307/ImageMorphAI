@@ -8,7 +8,7 @@ export async function POST(request: Request) {
 
   const sig = request.headers.get("stripe-signature") as string;
   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
-
+  
   let event;
 
   try {
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       buyerId: metadata?.buyerId || "",
       createdAt: new Date(),
     };
-    console.log("hello hi ji")
+    
     const newTransaction = await createTransaction(transaction);
     
     return NextResponse.json({ message: "OK", transaction: newTransaction });

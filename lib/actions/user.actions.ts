@@ -84,7 +84,7 @@ export async function updateCredits(userId: string, creditFee: number) {
       { new: true }
     )
     const newcoins = await User.findById(userId);
-    console.log(newcoins);
+   
     if(!updatedUserCredits) throw new Error("User credits update failed");
 
     return JSON.parse(JSON.stringify(updatedUserCredits));
