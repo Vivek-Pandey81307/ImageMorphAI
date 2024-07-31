@@ -10,7 +10,7 @@ const SignInPage = () => {
         {`Test Mode\nEmail: codecrusaders02@gmail.com\nPassword: codecrusaders02`}
       </h1>,
       {
-        duration: 15000, // Duration in milliseconds
+        duration: 30000, // Duration in milliseconds
       }
     )
   }, [])
